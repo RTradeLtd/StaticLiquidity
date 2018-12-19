@@ -1,12 +1,12 @@
 # StaticLiquidity
 
-This contract enables static liquidity for a token, allowing users to send tokens in exchange for ethereum at a fixed price
+This contract enables static liquidity for a token, allowing users to send tokens in exchange for ethereum at a fixed price. There is an example deployment of this contract on [rinkeby.etherscan.io](https://rinkeby.etherscan.io/address/0x2e95c5b2774e20202444a8a032c2bd291646c97f).
 
 ## Usage Guidelines
 
 When setting the exchange rate, liquidity must be disabled. This is done to prevent abuse  by the contract operator in which a user sends a a transaction to purchase tokens at price X, but before the transaction is mined the contract operator sets the price to X+Y, resulting in the user receiving less tokens than they expected, but the contract operator receives the same amount of ether for less tokens.
 
-## Selling Tokens
+## Selling Tokens For ETH
 
 1) Approve the StaticLiquidity contract to transfer tokens on your behalf
 2) Invoke the `sellTokens` function, specifying the amount of tokens to sell in units of wei
