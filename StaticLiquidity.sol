@@ -37,10 +37,13 @@ contract StaticLiquidity {
         _;
     }
 
+    /**
+        * @notice Constructor function used to initialize storage variables during contract deployment
+        * @param _tokenContractAddress This is the address of the token this contract will accept in exchange for eth
+     */
     constructor(address _tokenContractAddress) public {
         admin = msg.sender;
         erc20I = ERC20Interface(_tokenContractAddress);
-        require(erc20I.decimals() == 18, "decimals must be 18");
     }
 
     // fallback function used to receive ether
@@ -72,6 +75,7 @@ contract StaticLiquidity {
     /**
         * @notice Used to set the exchange rate of wei per tokens
         * @dev Caller must be administrator, and liquidity must be disabled
+        * @param _weiPerToken This is the amount of wei that will be sent in exchange for a single (1.0) token
         * @return boolean, used to indicate that the operation was successful
      */
     function setExchangeRate(uint256 _weiPerToken) public isAdmin isNotLiquid returns (bool) {
@@ -82,11 +86,12 @@ contract StaticLiquidity {
     /**
         * @notice Used to withdraw any remaining tokens that are in the contract
         * @dev Liquidity must be disabled first
+        * @return boolean, use to indicate that the operation was successful
      */
     function withdrawnTokens() public isAdmin isNotLiquid returns (bool) {
-        uint256 contractBalance = erc20I.balanceOf(address(this));
-        require(contractBalance > 0, "contract must have a balance greater than 0");
-        require(erc20I.transfer(msg.sender, contractBalance), "token transfer failed");
+        uint256 contractTokenBalance = erc20I.balanceOf(address(this));
+        require(contractTokenBalance > 0, "contract must have a token balance greater than 0");
+        require(erc20I.transfer(msg.sender, contractTokenBalance), "token transfer failed");
         return true;
     }
 
@@ -94,6 +99,10 @@ contract StaticLiquidity {
     // END USER FUNCTIONS //
     ////////////////////////
 
+    /**
+        * @notice Used to sell tokens in exchange for eth at a fixed price
+        * @param _tokensToSell This is the number of tokens to sell
+     */
     function sellTokens(uint256 _tokensToSell) public isLiquid returns (bool) {
         // send tokens to the contract
         require(erc20I.transferFrom(msg.sender, address(this), _tokensToSell), "failed to execute transferFrom, likely needs approval first");
